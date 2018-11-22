@@ -1,3 +1,207 @@
+@font-face {font-family: 'GalanoGrotesque';src: url('/fonts/3819C1_0_0.eot');src: url('/fonts/3819C1_0_0.eot?#iefix') format('embedded-opentype'),url('/fonts/3819C1_0_0.woff2') format('woff2'),url('/fonts/3819C1_0_0.woff') format('woff'),url('/fonts/3819C1_0_0.ttf') format('truetype');}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: grey;
+    background-color: #161516;
+    margin: 0;
+    overflow: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 70px;
+    padding: 0 25px;
+    margin-bottom: 15px;
+    position: relative;
+
+    .menu {
+        position: relative;
+        padding-left: 1.25em;
+        height: 18px;
+
+        &:before {
+            content: "";
+            position: absolute;
+            top: 0.25em;
+            left: 0;
+            width: 1.5em;
+            height: 0.125em;
+            border-top: 0.375em double #c9c8c9;
+            border-bottom: 0.125em solid #c9c8c9;
+        }
+    }
+
+    .logo {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        font-family: 'GalanoGrotesque';
+        font-size: 30px;
+        color: white;
+    }
+
+    .basket {
+        font-family: 'GalanoGrotesque';
+        font-size: 13px;
+        color: white;
+        text-transform: uppercase;
+
+        span {
+            color: #7b7a7b;
+        }
+    }
+}
+
+#slider {
+    display: flex;
+    padding: 0 40px;
+    position: relative;
+
+    article {
+        position: relative;
+        width: calc(40% - 60px);
+        color: #FFF;
+        z-index: 2;
+
+        .slide-count {
+            margin-top: 70px;
+            font-family: 'GalanoGrotesque';
+            font-size: 12px;
+
+            .line {
+                display: inline-block;
+                width: 30px;
+                height: 1px;
+                background-color: white;
+                vertical-align: middle;
+                margin: 0 10px;
+            }
+        }
+
+        .slide-title {
+            font-family: serif;
+            font-size: 140px;
+            font-weight: 400;
+            margin: 50px 0 50px -170px;
+            letter-spacing: -2px;
+
+            .code {
+                display: inline-block;
+                position: relative;
+
+                &:before {
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    top: 50%;
+                    left: -10px;
+                    width: 110%;
+                    height: 40%;
+                    background-color: #343234;
+                    z-index: -1;
+                }
+            }
+        }
+
+        .description {
+            font-size: 14px;
+            line-height: 20px;
+            max-width: 420px;
+        }
+
+        .btn {
+            margin-top: 50px;
+            display: inline-block;
+            position: relative;
+            font-family: 'GalanoGrotesque';
+            font-size: 13px;
+            color: white;
+            text-transform: uppercase;
+            text-decoration: none;
+
+            &:after {
+                content: '';
+                display: block;
+                width: 100%;
+                height: 1px;
+                position: absolute;
+                bottom: -8px;
+                background-color: #434143;
+            }
+        }
+    }
+
+    .slide-nav {
+        position: absolute;
+        z-index: 5;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+
+        button {
+            display: block;
+            position: relative;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 100%;
+            border: 1px solid #434143;
+            padding: 0;
+            background-color: transparent;
+            outline: 0;
+            cursor: pointer;
+            transition: border-color 0.3s ease-in-out;
+
+            &:hover {
+                border-color: #9e969e;
+            }
+
+            &:first-child {
+                margin-bottom: 10px;
+            }
+
+            svg {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                display: block;
+                width: 16px;
+                height: 7px;
+                fill: #9e969e;
+            }
+
+            &[data-direction="prev"] svg {
+                transform: translate(-50%,-50%) rotate(-90deg);
+            }
+
+            &[data-direction="next"] svg {
+                transform: translate(-50%,-50%) rotate(90deg);
+            }
+        }
+    }
+}
+
+#canvas-holder {
+    position: relative;
+    width: 60%;
+    padding-top: 55%;
+    margin-right: 60px;
+}
+
+#slider-canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }

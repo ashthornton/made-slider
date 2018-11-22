@@ -82,6 +82,7 @@ class Slider {
 
         this.addSlides();
         this.createDisplacementFilter();
+        this.buttonEvents();
 
     }
 
@@ -119,7 +120,17 @@ class Slider {
 
     nextSlide() {
 
-        let tl = new TimelineLite();
+        let tl = new TimelineLite({
+            onComplete: () => {
+                this.slides.index++;
+                this.slides.current = this.slides[ this.slides.index ];
+                
+                this.slides.next = this.slides[ this.slides.index ];
+                this.slides.next.y = -this.app.screen.height;
+
+
+            }
+        });
 
         tl.to( this.slides.current, 2, {
             y: this.app.screen.height,
@@ -131,9 +142,14 @@ class Slider {
             ease: 'Expo.easeInOut'
         }, 0 )
 
+        .to( this.dispSprite, 1, {
+            y: this.app.screen.height,
+            ease: 'Expo.easeInOut'
+        }, 0.5 )
+
         .to( this.dispFilter.scale, 1, {
-            x: 20,
-            y: 20,
+            x: 25,
+            y: 25,
             ease: 'Expo.easeInOut'
         }, 0 )
 
@@ -142,13 +158,13 @@ class Slider {
             y: 0,
             ease: 'Expo.easeInOut'
         }, 1 )
+
+    }
+
+    prevSlide() {
+
+
         
-        this.slides.index++;
-        this.slides.current = this.slides[ this.slides.index ];
-
-        this.slides.index = this.slides.index + 1 >= this.slides.count ? 0 : this.slides.index++;
-        this.slides.next = this.slides[ this.slides.index ];
-
     }
 
     createDisplacementFilter() {
@@ -165,7 +181,19 @@ class Slider {
 
     }
 
+    buttonEvents() {
+
+        let slideNav = document.querySelectorAll('.slide-nav button');
+
+        for( let i = 0; i < slideNav.length; i++ ) {
+
+            slideNav[i].addEventListener( 'click', () => { slideNav[i].dataset.direction === 'prev' ? this.prevSlide( slideNav[i] ) : this.nextSlide( slideNav[i] ) });
+
+        }
+
+    }
+
 }
 
-let slider = new Slider( document.getElementById('slider') )
+let slider = new Slider( document.getElementById('slider-canvas') )
 
