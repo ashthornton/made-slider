@@ -87,9 +87,10 @@ header {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    max-width: 1500px;
     height: 70px;
     padding: 0 25px;
-    margin-bottom: 15px;
+    margin: 0 auto 15px;
     position: relative;
 
     .menu {
@@ -153,6 +154,8 @@ header {
     display: flex;
     padding: 0 70px 0 40px;
     position: relative;
+    max-width: 1500px;
+    margin: 0 auto;
 
     article {
         position: relative;
@@ -197,13 +200,18 @@ header {
 
         .slide-title {
             font-family: 'para';
-            font-size: 110px;
+            font-size: 70px;
             font-weight: 400;
             margin: 60px 0 60px 50px;
             letter-spacing: -3px;
             padding-left: 12px;
-            line-height: 120px;
+            line-height: 80px;
             position: relative;
+
+            @media screen and (min-width: 1100px) {
+                font-size: 110px;
+                line-height: 120px;
+            }
 
             .code {
                 display: block;
@@ -242,9 +250,14 @@ header {
             position: relative;
             font-size: 12px;
             line-height: 20px;
-            width: 380px;
-            height: 100px;
+            width: 100%;
+            max-width: 380px;
+            height: 160px;
             font-family: 'begum';
+
+            @media screen and (min-width: 1100px) {
+                height: 100px;
+            }
 
             > p {
                 position: absolute;
@@ -278,9 +291,16 @@ header {
     .slide-nav {
         position: absolute;
         z-index: 5;
-        top: 50%;
-        right: 30px;
-        transform: translateY(-50%);
+        top: -10px;
+        left: calc(60% + 44px);
+        transform: rotate(-90deg);
+
+        @media screen and (min-width: 1100px) {
+            top: 50%;
+            right: 30px;
+            left: auto;
+            transform: translateY(-50%);
+        }
 
         button {
             display: block;
