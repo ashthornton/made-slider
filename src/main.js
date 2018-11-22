@@ -35,7 +35,11 @@ class Slider {
 
         this.dom = {
             titleNext: document.querySelector('.slide-title .next'),
-            titleCurrent: document.querySelector('.slide-title .current')
+            titleCurrent: document.querySelector('.slide-title .current'),
+            descriptionNext: document.querySelector('.description .next'),
+            descriptionCurrent: document.querySelector('.description .current'),
+            countNext: document.querySelector('.slide-count .next'),
+            countCurrent: document.querySelector('.slide-count .current')
         }
 
         this.slideData = {
@@ -131,16 +135,14 @@ class Slider {
         }
 
         let nextSlideData = this.slideData[ this.slides.activeIndex + 1];
-
         this.dom.titleNext.textContent = nextSlideData.title;
+        this.dom.descriptionNext.textContent = nextSlideData.description;
+        this.dom.countNext.textContent = '0' + ( this.slides.activeIndex + 2 );
 
         let tl = new TimelineLite({
             onComplete: () => {
                 this.slides.activeIndex++;
-                this.dom.titleCurrent.textContent = this.dom.titleNext.textContent;
-                this.dom.titleCurrent.removeAttribute('style');
-                this.dom.titleNext.textContent = '';
-                this.dom.titleNext.removeAttribute('style');
+                this.resetText();
             }
         });
 
@@ -168,8 +170,39 @@ class Slider {
             ease: 'Expo.easeInOut'
         }, 1 )
 
-        .to( ['.slide-title .current', '.slide-title .next'], 2, {
+        .set( '.slide-count .next', { top: '-100%' }, 0 )
+
+        .fromTo( ['.slide-count .current', '.slide-count .next'], 2, {
+            yPercent: 0
+        }, {
             yPercent: 100,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .set( '.slide-title .next', { top: '-100%' }, 0 )
+
+        .fromTo( ['.slide-title .current', '.slide-title .next'], 2, {
+            yPercent: 0
+        }, {
+            yPercent: 100,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .fromTo( '.description .current', 2, {
+            y: 0,
+            autoAlpha: 1,
+        }, {
+            y: 40,
+            autoAlpha: 0,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .fromTo( '.description .next', 2, {
+            y: -40,
+            autoAlpha: 0,
+        }, {
+            y: 0,
+            autoAlpha: 1,
             ease: 'Expo.easeInOut'
         }, 0 )
 
@@ -185,9 +218,15 @@ class Slider {
             this.prevBtn.setAttribute( 'disabled', 'disabled' );
         }
 
+        let nextSlideData = this.slideData[ this.slides.activeIndex - 1];
+        this.dom.titleNext.textContent = nextSlideData.title;
+        this.dom.descriptionNext.textContent = nextSlideData.description;
+        this.dom.countNext.textContent = '0' + ( this.slides.activeIndex );
+
         let tl = new TimelineLite({
             onComplete: () => {
                 this.slides.activeIndex--;
+                this.resetText();
             }
         });
 
@@ -214,7 +253,62 @@ class Slider {
             y: 0,
             ease: 'Expo.easeInOut'
         }, 1 )
+
+        .set( '.slide-count .next', { top: '100%' }, 0 )
+
+        .fromTo( ['.slide-count .current', '.slide-count .next'], 2, {
+            yPercent: 0
+        }, {
+            yPercent: -100,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .set( '.slide-title .next', { top: '100%' }, 0 )
+
+        .fromTo( ['.slide-title .current', '.slide-title .next'], 2, {
+            yPercent: 0
+        }, {
+            yPercent: -100,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .fromTo( '.description .current', 2, {
+            y: 0,
+            autoAlpha: 1,
+        }, {
+            y: -40,
+            autoAlpha: 0,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .fromTo( '.description .next', 2, {
+            y: 40,
+            autoAlpha: 0,
+        }, {
+            y: 0,
+            autoAlpha: 1,
+            ease: 'Expo.easeInOut'
+        }, 0 )
         
+    }
+
+    resetText() {
+
+        this.dom.titleCurrent.textContent = this.dom.titleNext.textContent;
+        this.dom.titleCurrent.removeAttribute('style');
+        this.dom.titleNext.textContent = '';
+        this.dom.titleNext.removeAttribute('style');
+
+        this.dom.descriptionCurrent.textContent = this.dom.descriptionNext.textContent;
+        this.dom.descriptionCurrent.removeAttribute('style');
+        this.dom.descriptionNext.textContent = '';
+        this.dom.descriptionNext.removeAttribute('style');
+
+        this.dom.countCurrent.textContent = this.dom.countNext.textContent;
+        this.dom.countCurrent.removeAttribute('style');
+        this.dom.countNext.textContent = '';
+        this.dom.countNext.removeAttribute('style');
+
     }
 
     createDisplacementFilter() {
@@ -235,9 +329,9 @@ class Slider {
 
         this.prevBtn = document.querySelector('.slide-nav [data-direction="prev"]');
         this.nextBtn = document.querySelector('.slide-nav [data-direction="next"]');
-
         this.prevBtn.addEventListener( 'click', this.prevSlide.bind( this ) );
         this.nextBtn.addEventListener( 'click', this.nextSlide.bind( this ) );
+
     }
 
 }
