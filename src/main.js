@@ -33,10 +33,23 @@ class Slider {
         this.canvasHeight = this.canvas.clientHeight;
         this.dpr = window.devicePixelRatio && window.devicePixelRatio >= 2 ? 2 : 1;
 
-        this.imageList = [
-            'j110.jpg',
-            'j104.jpg'
-        ];
+        this.dom = {
+            titleNext: document.querySelector('.slide-title .next'),
+            titleCurrent: document.querySelector('.slide-title .current')
+        }
+
+        this.slideData = {
+            0: {
+                image: 'j110.jpg',
+                title: 'J110',
+                description: `With the comfort of a lounge chair and the functionality of a dining chair, HAY’s reproduction of Poul M. Voulter’s J110 offers equal measures of strong aesthetics and practicality. Long rods at the back and curved armrests create an inviting expression. Made in lacquered solid beech and available in a variety of colours.`
+            },
+            1: {
+                image: 'j104.jpg',
+                title: 'J104',
+                description: `Jørgen Bækmark’s J104 chair was designed as a cross between a dining chair and an easy chair, HAY’s reproduction of this classic is crafted in solid beech with a variety of soaped or lacquered finishes.`
+            }
+        }
 
     }
 
@@ -55,8 +68,8 @@ class Slider {
 
     loadImages() {
 
-        this.imageList.forEach( file => {
-            PIXI.loader.add( file, '/images/' + file );
+        Object.keys( this.slideData ).forEach( key => {
+            PIXI.loader.add( key, '/images/' + this.slideData[key].image );
         });
 
         PIXI.loader.load( ( l, images ) => { 
@@ -75,11 +88,6 @@ class Slider {
         this.slider.height = this.app.screen.height;
         this.app.stage.addChild( this.slider );
 
-        this.slider.interactive = true;
-        this.slider.on( 'pointerdown', () => {
-            this.nextSlide();
-        });
-
         this.addSlides();
         this.createDisplacementFilter();
         this.buttonEvents();
@@ -89,18 +97,15 @@ class Slider {
     addSlides() {
 
         this.slides = {
-            prev: null,
-            current: null,
-            next: null,
-            index: 0,
+            activeIndex: 0,
             count: 0
-        };
+        }
 
         let i = 0;
 
-        Object.keys( this.images ).forEach( image => {
+        Object.keys( this.images ).forEach( key => {
 
-            let slide = new PIXI.Sprite( this.images[ image ].texture );
+            let slide = new PIXI.Sprite( this.images[key].texture );
             slide.width = this.app.screen.width;
             slide.height = this.app.screen.height;
             slide.y = i === 0 ? 0 : -this.app.screen.height;
@@ -113,39 +118,43 @@ class Slider {
             
         });
 
-        this.slides.current = this.slides[0];
-        this.slides.next = this.slides.prev = this.slides[1];
-
     }
 
     nextSlide() {
 
+        if( this.nextBtn.getAttribute( 'disabled' ) ) return false;
+
+        this.prevBtn.removeAttribute( 'disabled' );
+
+        if( this.slides.activeIndex + 2 >= this.slides.count ) {
+            this.nextBtn.setAttribute( 'disabled', 'disabled' );
+        }
+
+        let nextSlideData = this.slideData[ this.slides.activeIndex + 1];
+
+        this.dom.titleNext.textContent = nextSlideData.title;
+
         let tl = new TimelineLite({
             onComplete: () => {
-                this.slides.index++;
-                this.slides.current = this.slides[ this.slides.index ];
-                
-                this.slides.next = this.slides[ this.slides.index ];
-                this.slides.next.y = -this.app.screen.height;
-
-
+                this.slides.activeIndex++;
+                this.dom.titleCurrent.textContent = this.dom.titleNext.textContent;
+                this.dom.titleCurrent.removeAttribute('style');
+                this.dom.titleNext.textContent = '';
+                this.dom.titleNext.removeAttribute('style');
             }
         });
 
-        tl.to( this.slides.current, 2, {
+        tl.to( this.slides[ this.slides.activeIndex ], 2, {
             y: this.app.screen.height,
             ease: 'Expo.easeInOut'
         }, 0 )
 
-        .to( this.slides.next, 2, {
+        .fromTo( this.slides[ this.slides.activeIndex + 1 ], 2, {
+            y: -this.app.screen.height
+        }, {
             y: 0,
             ease: 'Expo.easeInOut'
         }, 0 )
-
-        .to( this.dispSprite, 1, {
-            y: this.app.screen.height,
-            ease: 'Expo.easeInOut'
-        }, 0.5 )
 
         .to( this.dispFilter.scale, 1, {
             x: 25,
@@ -159,11 +168,52 @@ class Slider {
             ease: 'Expo.easeInOut'
         }, 1 )
 
+        .to( ['.slide-title .current', '.slide-title .next'], 2, {
+            yPercent: 100,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
     }
 
     prevSlide() {
 
+        if( this.prevBtn.getAttribute( 'disabled' ) ) return false;
 
+        this.nextBtn.removeAttribute( 'disabled' );
+
+        if( this.slides.activeIndex - 2 <= 0 ) {
+            this.prevBtn.setAttribute( 'disabled', 'disabled' );
+        }
+
+        let tl = new TimelineLite({
+            onComplete: () => {
+                this.slides.activeIndex--;
+            }
+        });
+
+        tl.to( this.slides[ this.slides.activeIndex ], 2, {
+            y: -this.app.screen.height,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .fromTo( this.slides[ this.slides.activeIndex - 1 ], 2, {
+            y: this.app.screen.height
+        }, {
+            y: 0,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .to( this.dispFilter.scale, 1, {
+            x: 25,
+            y: 25,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .to( this.dispFilter.scale, 1, {
+            x: 0,
+            y: 0,
+            ease: 'Expo.easeInOut'
+        }, 1 )
         
     }
 
@@ -183,14 +233,11 @@ class Slider {
 
     buttonEvents() {
 
-        let slideNav = document.querySelectorAll('.slide-nav button');
+        this.prevBtn = document.querySelector('.slide-nav [data-direction="prev"]');
+        this.nextBtn = document.querySelector('.slide-nav [data-direction="next"]');
 
-        for( let i = 0; i < slideNav.length; i++ ) {
-
-            slideNav[i].addEventListener( 'click', () => { slideNav[i].dataset.direction === 'prev' ? this.prevSlide( slideNav[i] ) : this.nextSlide( slideNav[i] ) });
-
-        }
-
+        this.prevBtn.addEventListener( 'click', this.prevSlide.bind( this ) );
+        this.nextBtn.addEventListener( 'click', this.nextSlide.bind( this ) );
     }
 
 }

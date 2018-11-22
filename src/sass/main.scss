@@ -1,4 +1,26 @@
-@font-face {font-family: 'GalanoGrotesque';src: url('/fonts/3819C1_0_0.eot');src: url('/fonts/3819C1_0_0.eot?#iefix') format('embedded-opentype'),url('/fonts/3819C1_0_0.woff2') format('woff2'),url('/fonts/3819C1_0_0.woff') format('woff'),url('/fonts/3819C1_0_0.ttf') format('truetype');}
+@font-face {
+    font-family: 'para';
+    src: url('/fonts/para_supreme_light_fine-webfont.woff2') format('woff2'),
+         url('/fonts/para_supreme_light_fine-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'begum';
+    src: url('/fonts/begum-regular-webfont.woff2') format('woff2'),
+         url('/fonts/begum-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'tt-commons';
+    src: url('/fonts/ttcommons-bold-webfont.woff2') format('woff2'),
+         url('/fonts/ttcommons-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
 * {
     box-sizing: border-box;
@@ -42,13 +64,13 @@ header {
         top: 50%;
         left: 50%;
         transform: translate(-50%,-50%);
-        font-family: 'GalanoGrotesque';
+        font-family: 'tt-commons';
         font-size: 30px;
         color: white;
     }
 
     .basket {
-        font-family: 'GalanoGrotesque';
+        font-family: 'tt-commons';
         font-size: 13px;
         color: white;
         text-transform: uppercase;
@@ -59,21 +81,38 @@ header {
     }
 }
 
+#canvas-holder {
+    position: relative;
+    width: 60%;
+    padding-top: 60%;
+    margin-right: 50px;
+}
+
+#slider-canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 #slider {
     display: flex;
-    padding: 0 40px;
+    padding: 0 70px 0 40px;
     position: relative;
 
     article {
         position: relative;
-        width: calc(40% - 60px);
+        width: calc(40% - 50px);
         color: #FFF;
         z-index: 2;
 
         .slide-count {
             margin-top: 70px;
-            font-family: 'GalanoGrotesque';
-            font-size: 12px;
+            font-family: 'tt-commons';
+            font-size: 14px;
 
             .line {
                 display: inline-block;
@@ -86,41 +125,60 @@ header {
         }
 
         .slide-title {
-            font-family: serif;
-            font-size: 140px;
+            font-family: 'para';
+            font-size: 110px;
             font-weight: 400;
-            margin: 50px 0 50px -170px;
-            letter-spacing: -2px;
+            margin: 50px 0 50px 50px;
+            letter-spacing: -3px;
+            padding-left: 12px;
+            line-height: 120px;
+            position: relative;
 
             .code {
-                display: inline-block;
-                position: relative;
+                display: block;
+                position: absolute;
+                right: 100%;
+                height: 100%;
+                padding: 0 6px;
+                overflow: hidden;
 
                 &:before {
                     content: '';
                     display: block;
                     position: absolute;
-                    top: 50%;
+                    bottom: 0;
                     left: -10px;
-                    width: 110%;
+                    width: 108%;
                     height: 40%;
                     background-color: #343234;
                     z-index: -1;
+                }
+
+                > span {
+                    display: inline-block;
+                    height: 100%;
+                }
+
+                .next {
+                    position: absolute;
+                    top: -100%;
+                    left: 0;
                 }
             }
         }
 
         .description {
-            font-size: 14px;
+            font-size: 12px;
             line-height: 20px;
-            max-width: 420px;
+            max-width: 380px;
+            font-family: 'begum';
         }
 
         .btn {
             margin-top: 50px;
             display: inline-block;
             position: relative;
-            font-family: 'GalanoGrotesque';
+            font-family: 'tt-commons';
             font-size: 13px;
             color: white;
             text-transform: uppercase;
@@ -157,11 +215,15 @@ header {
             padding: 0;
             background-color: transparent;
             outline: 0;
-            cursor: pointer;
             transition: border-color 0.3s ease-in-out;
 
-            &:hover {
+            &:disabled {
+                opacity: 0.2;
+            }
+
+            &:hover:not(:disabled) {
                 border-color: #9e969e;
+                cursor: pointer;
             }
 
             &:first-child {
@@ -187,21 +249,4 @@ header {
             }
         }
     }
-}
-
-#canvas-holder {
-    position: relative;
-    width: 60%;
-    padding-top: 55%;
-    margin-right: 60px;
-}
-
-#slider-canvas {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
 }
