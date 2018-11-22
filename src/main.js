@@ -52,6 +52,11 @@ class Slider {
                 image: 'j104.jpg',
                 title: 'J104',
                 description: `Jørgen Bækmark’s J104 chair was designed as a cross between a dining chair and an easy chair, HAY’s reproduction of this classic is crafted in solid beech with a variety of soaped or lacquered finishes.`
+            },
+            2: {
+                image: 'j42.jpg',
+                title: 'J42',
+                description: `HAY’s reproduction of Børge Mogensen’s classic J42 chair clearly reflects his design philosophy. Precise proportions with simple horizontal and vertical lines are used to construct a curved spindled backrest and angular armrests. With a broad plywood seat and frame in solid oak or beech, the design has a timeless quality that is built to provide lasting comfort.`
             }
         }
 
@@ -121,6 +126,8 @@ class Slider {
             this.slides.count++;
             
         });
+
+        document.querySelector( '.slide-count .total' ).textContent = `0${this.slides.count}`;
 
     }
 
@@ -214,7 +221,7 @@ class Slider {
 
         this.nextBtn.removeAttribute( 'disabled' );
 
-        if( this.slides.activeIndex - 2 <= 0 ) {
+        if( this.slides.activeIndex - 2 < 0 ) {
             this.prevBtn.setAttribute( 'disabled', 'disabled' );
         }
 
