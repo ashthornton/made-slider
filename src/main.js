@@ -1,6 +1,6 @@
 import './sass/main.scss';
 import * as PIXI from 'pixi.js'
-import { TimelineLite } from 'gsap';
+import { TweenMax, TimelineLite } from 'gsap';
 
 // Initial HMR Setup
 if (module.hot) {
@@ -11,11 +11,70 @@ if (module.hot) {
     })
 }
 
+class Loader {
+
+    constructor() {
+
+        this.container = document.querySelector('#loader');
+        this.grey = this.container.querySelector('.grey');
+        this.white = this.container.querySelector('.white');
+        this.textWrap = this.container.querySelector('.text-wrap');
+        this.text = this.container.querySelector('.text');
+        this.dot = this.text.querySelector('span');
+        this.animateDot();
+
+    }
+
+    animateDot() {
+
+        this.dotTween = TweenMax.fromTo( this.dot, 0.5, {
+            y: 0
+        }, {
+            y: -10,
+            ease: 'Power0.easeOut',
+            yoyo: true,
+            yoyoEase: 'Bounce.easeOut',
+            repeat: -1,
+            repeatDelay: 0.3
+        })
+
+    }
+
+    hide() {
+
+        let tl = new TimelineLite({
+            delay: 0.5,
+            onComplete: () => {
+                this.dotTween.kill();
+                this.container.style.display = 'none';
+            }
+        });
+
+        tl.to( this.text, 0.8, {
+            y: 100,
+            ease: 'Expo.easeIn'
+        }, 0 )
+
+        .to( this.grey, 1, {
+            yPercent: 100,
+            ease: 'Expo.easeOut'
+        }, 0.8 )
+
+        .to( this.white, 1, {
+            yPercent: 100,
+            ease: 'Expo.easeOut'
+        }, 1 )
+
+    }
+
+}
+
 class Slider {
 
-    constructor( canvas ) {
+    constructor( canvas, loader ) {
 
         this.canvas = canvas;
+        this.loader = loader;
 
         this.setOptions();
         this.createApp();
@@ -85,6 +144,7 @@ class Slider {
 
             this.images = images;
             this.createSlider();
+            this.loader.hide();
 
         });
 
@@ -343,5 +403,6 @@ class Slider {
 
 }
 
-let slider = new Slider( document.getElementById('slider-canvas') )
+let loader = new Loader();
+let slider = new Slider( document.getElementById('slider-canvas'), loader )
 

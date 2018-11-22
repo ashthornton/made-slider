@@ -36,6 +36,52 @@ body {
     overflow: hidden;
 }
 
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+
+    .grey, .white {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .grey {
+        z-index: 2;
+        background-color: #1b191b;
+    }
+
+    .white {
+        z-index: 1;
+        background-color: white;
+    }
+
+    .text-wrap {
+        overflow: hidden;
+    }
+
+    .text-wrap {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        font-family: 'tt-commons';
+        color: white;
+        font-size: 70px;
+        z-index: 3;
+
+        span {
+            display: inline-block;
+        }
+    }
+}
+
 header {
     display: flex;
     justify-content: space-between;
