@@ -92,6 +92,7 @@ class Slider {
         this.canvasHeight = this.canvas.clientHeight;
         this.dpr = window.devicePixelRatio && window.devicePixelRatio >= 2 ? 2 : 1;
         this.thumbsVisible = false;
+        this.animating = false;
 
         this.dom = {
             titleNext: document.querySelector('.slide-title .next'),
@@ -197,12 +198,19 @@ class Slider {
         });
 
         document.querySelector( '.slide-count .total' ).textContent = `0${this.slides.count}`;
+        document.querySelector( '.slide-title .code' ).style.width = this.dom.titleCurrent.scrollWidth + 6 + 'px';
+
+        for( let i = 0; i < this.slides.count; i++ ) {
+            document.querySelector( '.dots' ).innerHTML += '<span></span>';
+        }
+
+        document.querySelector( '.dots > span:nth-child(1)' ).classList.add('active');
 
     }
 
     nextSlide() {
 
-        if( this.nextBtn.getAttribute( 'disabled' ) ) return false;
+        if( this.nextBtn.getAttribute( 'disabled' ) || this.thumbsVisible || this.animating ) return false;
 
         this.prevBtn.removeAttribute( 'disabled' );
 
@@ -215,10 +223,16 @@ class Slider {
         this.dom.descriptionNext.textContent = nextSlideData.description;
         this.dom.countNext.textContent = '0' + ( this.slides.activeIndex + 2 );
 
+        this.updateDot( true );
+
         let tl = new TimelineMax({
+            onStart: () => {
+                this.animating = true;
+            },
             onComplete: () => {
                 this.slides.activeIndex++;
                 this.resetText();
+                this.animating = false;
             }
         });
 
@@ -237,21 +251,14 @@ class Slider {
         .to( this.dispFilter.scale, 1, {
             x: 10,
             y: 10,
-            ease: 'Expo.easeInOut'
+            ease: 'Power2.easeInOut'
         }, 0 )
 
         .to( this.dispFilter.scale, 1, {
             x: 0,
             y: 0,
-            ease: 'Expo.easeInOut'
+            ease: 'Power2.easeInOut'
         }, 1 )
-
-        // .fromTo( this.dispSprite, 1.5, {
-        //     y: 0
-        // }, {
-        //     y: this.app.screen.height / 2,
-        //     ease: 'Power2.easeInOut'
-        // }, 0.5)
 
         .set( '.slide-count .next', { top: '-100%' }, 0 )
 
@@ -268,6 +275,11 @@ class Slider {
             yPercent: 0
         }, {
             yPercent: 100,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .to( '.slide-title .code', 2, {
+            width: this.dom.titleNext.scrollWidth + 6,
             ease: 'Expo.easeInOut'
         }, 0 )
 
@@ -293,7 +305,7 @@ class Slider {
 
     prevSlide() {
 
-        if( this.prevBtn.getAttribute( 'disabled' ) ) return false;
+        if( this.prevBtn.getAttribute( 'disabled' ) || this.thumbsVisible || this.animating ) return false;
 
         this.nextBtn.removeAttribute( 'disabled' );
 
@@ -306,10 +318,16 @@ class Slider {
         this.dom.descriptionNext.textContent = nextSlideData.description;
         this.dom.countNext.textContent = '0' + ( this.slides.activeIndex );
 
+        this.updateDot( false );
+
         let tl = new TimelineMax({
+            onStart: () => {
+                this.animating = true;
+            },
             onComplete: () => {
                 this.slides.activeIndex--;
                 this.resetText();
+                this.animating = false;
             }
         });
 
@@ -328,13 +346,13 @@ class Slider {
         .to( this.dispFilter.scale, 1, {
             x: 10,
             y: 10,
-            ease: 'Expo.easeInOut'
+            ease: 'Power2.easeInOut'
         }, 0 )
 
         .to( this.dispFilter.scale, 1, {
             x: 0,
             y: 0,
-            ease: 'Expo.easeInOut'
+            ease: 'Power2.easeInOut'
         }, 1 )
 
         .set( '.slide-count .next', { top: '100%' }, 0 )
@@ -352,6 +370,11 @@ class Slider {
             yPercent: 0
         }, {
             yPercent: -100,
+            ease: 'Expo.easeInOut'
+        }, 0 )
+
+        .to( '.slide-title .code', 2, {
+            width: this.dom.titleNext.scrollWidth + 6,
             ease: 'Expo.easeInOut'
         }, 0 )
 
@@ -400,7 +423,6 @@ class Slider {
         this.dispSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
         this.dispSprite.skew.x = 1;
         this.dispSprite.skew.y = -1;
-        this.dispSprite.position.x = 20;
         this.dispSprite.position.y = 380;
         this.dispSprite.scale.y = 1.8;
         this.dispSprite.scale.x = 1.8;
@@ -424,6 +446,7 @@ class Slider {
     showThumbs() {
 
         this.thumbsVisible = true;
+        this.canvas.classList.add('thumbs-visible');
 
         this.thumbsTl = new TimelineMax();
 
@@ -471,8 +494,17 @@ class Slider {
     hideThumbs() {
 
         this.thumbsVisible = false;
+        this.canvas.classList.remove('thumbs-visible');
 
         this.thumbsTl.reverse();
+
+    }
+
+    updateDot( right ) {
+
+        let newActive = right ? this.slides.activeIndex + 2 : this.slides.activeIndex;
+        document.querySelector('.dots > span.active').classList.remove('active');
+        document.querySelector(`.dots > span:nth-child(${newActive})`).classList.add('active');
 
     }
 
