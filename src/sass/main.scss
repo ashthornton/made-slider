@@ -37,6 +37,7 @@ body {
 }
 
 #loader {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -148,6 +149,52 @@ header {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 2;
+}
+
+.thumbs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+
+    > div {
+        position: absolute;
+        width: 47%;
+        height: 0;
+        overflow: hidden;
+
+        &:nth-child(1) {
+            top: 0;
+            left: 0;
+        }
+
+        &:nth-child(2) {
+            top: 0;
+            right: 0;
+        }
+
+        &:nth-child(3) {
+            top: 53%;
+            left: 0;
+        }
+
+        &:nth-child(4) {
+            top: 53%;
+            right: 0;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            transform: scale(1.4);
+        }
+    }
 }
 
 #slider {

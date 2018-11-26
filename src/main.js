@@ -1,6 +1,6 @@
 import './sass/main.scss';
 import * as PIXI from 'pixi.js'
-import { TweenMax, TimelineLite } from 'gsap';
+import { TweenMax, TimelineMax } from 'gsap';
 
 // Initial HMR Setup
 if (module.hot) {
@@ -42,7 +42,7 @@ class Loader {
 
     hide() {
 
-        let tl = new TimelineLite({
+        let tl = new TimelineMax({
             delay: 0.5,
             onComplete: () => {
                 this.dotTween.kill();
@@ -91,6 +91,7 @@ class Slider {
         this.canvasWidth = this.canvas.clientWidth;
         this.canvasHeight = this.canvas.clientHeight;
         this.dpr = window.devicePixelRatio && window.devicePixelRatio >= 2 ? 2 : 1;
+        this.thumbsVisible = false;
 
         this.dom = {
             titleNext: document.querySelector('.slide-title .next'),
@@ -140,7 +141,7 @@ class Slider {
             PIXI.loader.add( key, '/images/' + this.slideData[key].image );
         });
 
-        PIXI.loader.load( ( l, images ) => { 
+        PIXI.loader.load( ( l, images ) => {
 
             this.images = images;
             this.createSlider();
@@ -156,6 +157,14 @@ class Slider {
         this.slider.width = this.app.screen.width;
         this.slider.height = this.app.screen.height;
         this.app.stage.addChild( this.slider );
+
+        this.clipRect = new PIXI.Rectangle( 0, 0, this.app.screen.width, this.app.screen.height );
+        this.slider.filterArea = this.clipRect;
+
+        this.app.stage.interactive = true;
+        this.app.stage.on( 'pointerdown', () => {
+            this.thumbsVisible ? this.hideThumbs() : this.showThumbs();
+        });
 
         this.addSlides();
         this.createDisplacementFilter();
@@ -206,7 +215,7 @@ class Slider {
         this.dom.descriptionNext.textContent = nextSlideData.description;
         this.dom.countNext.textContent = '0' + ( this.slides.activeIndex + 2 );
 
-        let tl = new TimelineLite({
+        let tl = new TimelineMax({
             onComplete: () => {
                 this.slides.activeIndex++;
                 this.resetText();
@@ -226,8 +235,8 @@ class Slider {
         }, 0 )
 
         .to( this.dispFilter.scale, 1, {
-            x: 25,
-            y: 25,
+            x: 10,
+            y: 10,
             ease: 'Expo.easeInOut'
         }, 0 )
 
@@ -236,6 +245,13 @@ class Slider {
             y: 0,
             ease: 'Expo.easeInOut'
         }, 1 )
+
+        // .fromTo( this.dispSprite, 1.5, {
+        //     y: 0
+        // }, {
+        //     y: this.app.screen.height / 2,
+        //     ease: 'Power2.easeInOut'
+        // }, 0.5)
 
         .set( '.slide-count .next', { top: '-100%' }, 0 )
 
@@ -290,7 +306,7 @@ class Slider {
         this.dom.descriptionNext.textContent = nextSlideData.description;
         this.dom.countNext.textContent = '0' + ( this.slides.activeIndex );
 
-        let tl = new TimelineLite({
+        let tl = new TimelineMax({
             onComplete: () => {
                 this.slides.activeIndex--;
                 this.resetText();
@@ -310,8 +326,8 @@ class Slider {
         }, 0 )
 
         .to( this.dispFilter.scale, 1, {
-            x: 25,
-            y: 25,
+            x: 10,
+            y: 10,
             ease: 'Expo.easeInOut'
         }, 0 )
 
@@ -380,10 +396,14 @@ class Slider {
 
     createDisplacementFilter() {
 
-        this.dispSprite = PIXI.Sprite.fromImage('/images/disp2.jpg');
+        this.dispSprite = PIXI.Sprite.fromImage('/images/disp5.jpg');
         this.dispSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-        this.dispSprite.scale.y = 1.5;
-        this.dispSprite.scale.x = 1.5;
+        this.dispSprite.skew.x = 1;
+        this.dispSprite.skew.y = -1;
+        this.dispSprite.position.x = 20;
+        this.dispSprite.position.y = 380;
+        this.dispSprite.scale.y = 1.8;
+        this.dispSprite.scale.x = 1.8;
         this.app.stage.addChild( this.dispSprite );
 
         this.dispFilter = new PIXI.filters.DisplacementFilter( this.dispSprite, 0 );
@@ -398,6 +418,61 @@ class Slider {
         this.nextBtn = document.querySelector('.slide-nav [data-direction="next"]');
         this.prevBtn.addEventListener( 'click', this.prevSlide.bind( this ) );
         this.nextBtn.addEventListener( 'click', this.nextSlide.bind( this ) );
+
+    }
+
+    showThumbs() {
+
+        this.thumbsVisible = true;
+
+        this.thumbsTl = new TimelineMax();
+
+        this.thumbsTl
+        
+            .fromTo( this.clipRect, 3, {
+                y: 0
+            }, {
+                y: this.app.screen.height + 50,
+                ease: 'Expo.easeInOut'
+            }, 0 )
+
+            .fromTo( this.dispFilter.scale, 2, {
+                x: 0,
+                y: 0
+            }, {
+                x: 10,
+                y: 10,
+                ease: 'Expo.easeInOut'
+            }, 0 )
+
+            .fromTo( this.dispSprite, 3, {
+                y: this.app.screen.height
+            }, {
+                y: 0,
+                ease: 'Power2.easeInOut'
+            }, 0.5)
+
+            .staggerFromTo( '.thumbs > div', 3, {
+                height: 0
+            }, {
+                height: '47%',
+                ease: 'Expo.easeInOut'
+            }, 0.1, 0.2 )
+
+            .staggerFromTo( '.thumbs > div img', 3, {
+                scale: 1.4
+            }, {
+                scale: 1,
+                ease: 'Expo.easeInOut'
+            }, 0.1, 0.2 )
+
+    }
+
+    hideThumbs() {
+
+        this.thumbsVisible = false;
+
+        this.thumbsTl.reverse();
 
     }
 
